@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Rao Family Dynasty</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Mobile Landscape Warning -->
+  <div class="mobile-warning" id="mobileWarning">
+    <div class="mobile-warning-content">
+      <i class="fas fa-rotate"></i>
+      <h3>Better Viewing Experience</h3>
+      <p>For the best experience with the family tree, we recommend:</p>
+      <ul>
+        <li>Rotating your device to landscape mode</li>
+        <li>Viewing on a tablet</li>
+        <li>Using a desktop computer</li>
+      </ul>
+      <button class="btn btn-royal" id="continueMobile">
+        Continue Anyway
+      </button>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="royal-header">
+    <div class="container header-content">
+      <div class="family-crest">
+        <i class="fas fa-crown"></i>
+      </div>
+      <h1 id="main-heading">RAO FAMILY DYNASTY</h1>
+      <p class="subtitle" id="header-subtitle">Established 1895 • Honoring Our Heritage</p>
+    </div>
+  </header>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <h2 class="section-title">Family Legacy</h2>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-value" id="totalMembers">0</div>
+          <div class="stat-label">Family Members</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalGenerations">0</div>
+          <div class="stat-label">Generations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="yearsLegacy">127</div>
+          <div class="stat-label">Years of Legacy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="livingMembers">0</div>
+          <div class="stat-label">Living Members</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <div class="container">
+    <div class="royal-nav">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="family-tree-tab" data-bs-toggle="tab" data-bs-target="#family-tree" type="button" role="tab" aria-controls="family-tree" aria-selected="true">
+            <i class="fas fa-tree me-2"></i>Family Tree
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+            <i class="fas fa-scroll me-2"></i>Family History
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab" aria-controls="timeline" aria-selected="false">
+            <i class="fas fa-history me-2"></i>Family Timeline
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="container">
+    <div class="tab-content" id="myTabContent">
+      <!-- Family Tree Tab -->
+      <div class="tab-pane fade show active" id="family-tree" role="tabpanel" aria-labelledby="family-tree-tab">
+        <div class="tree-controls">
+          <h2 class="tree-title">Family Hierarchy</h2>
+          <div class="tree-actions">
+            <div class="search-container">
+              <input type="text" class="search-box" id="searchBox" placeholder="Search family members...">
+              <i class="fas fa-search search-icon"></i>
+            </div>
+            <button class="btn btn-royal-outline" id="printTree">
+              <i class="fas fa-print me-2"></i>Print Tree
+            </button>
+            <button class="btn btn-royal-outline" id="refreshTree">
+              <i class="fas fa-sync-alt me-2"></i>Refresh
+            </button>
+            <button class="btn btn-royal" id="fullScreenBtn">
+              <i class="fas fa-expand me-2"></i>Full Screen
+            </button>
+          </div>
+        </div>
+        
+        <div class="filter-container">
+          <button class="filter-btn active" data-generation="all">All Generations</button>
+          <button class="filter-btn" data-generation="1">1st Generation</button>
+          <button class="filter-btn" data-generation="2">2nd Generation</button>
+          <button class="filter-btn" data-generation="3">3rd Generation</button>
+          <button class="filter-btn" data-generation="4">4th Generation</button>
+          <button class="filter-btn" data-generation="5">5th Generation</button>
+          <button class="filter-btn" data-generation="6">6th Generation</button>
+        </div>
+        
+        <div class="tree-container">
+          <div class="tree-wrapper">
+            <div class="tree" id="familyTree">
+              <!-- Tree will be generated here by JavaScript -->
+              <div class="text-center py-5">
+                <div class="spinner-border text-gold" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading family tree...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+        <div class="form-container">
+          <h2 class="form-title" id="history-title">Family History</h2>
+          <div class="text-start">
+            <p class="lead" id="history-introduction">The Rao family traces its lineage back to the late 19th century, with Nana / Nanha establishing the family dynasty in 1895. Through generations, the family has maintained its traditions while adapting to modern times.</p>
+            
+            <h4 class="mt-5" style="color: var(--burgundy); font-family: 'Cinzel', serif;">Notable Family Achievements</h4>
+            <ul class="list-unstyled" id="history-achievements">
+              <!-- Achievements will be loaded dynamically -->
+            </ul>
+            
+            <h4 class="mt-5" style="color: var(--burgundy); font-family: 'Cinzel', serif;">Family Values</h4>
+            <p id="history-values">The Rao family is built on principles of integrity, respect for elders, commitment to education, and dedication to community service. These values have been passed down through generations, forming the foundation of the family's enduring legacy.</p>
+            
+            <div class="row mt-5">
+              <div class="col-md-6">
+                <h5 style="color: var(--burgundy); font-family: 'Cinzel', serif;">Family Motto</h5>
+                <blockquote class="blockquote" style="border-left: 4px solid var(--gold); padding-left: 20px; font-style: italic;" id="history-motto">
+                  "Honor the past, serve the present, build the future."
+                </blockquote>
+              </div>
+              <div class="col-md-6">
+                <h5 style="color: var(--burgundy); font-family: 'Cinzel', serif;">Family Crest Symbolism</h5>
+                <p id="history-crest">The crown represents leadership and nobility, while the golden background symbolizes prosperity and the enduring legacy of the family.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline Tab -->
+      <div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
+        <div class="form-container">
+          <h2 class="form-title" id="timeline-title">Family Timeline</h2>
+          <div class="timeline" id="timeline-events">
+            <!-- Timeline events will be loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Member Details Modal -->
+  <div class="overlay" id="overlay"></div>
+  <div class="member-details" id="memberDetails">
+    <button class="close-btn" id="closeDetails">
+      <i class="fas fa-times"></i>
+    </button>
+    <h3 id="detailName">Member Name</h3>
+    <div class="detail-item">
+      <strong>Generation:</strong> <span id="detailGeneration"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Birth Year:</strong> <span id="detailBirthYear"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Status:</strong> <span id="detailStatus"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Parent:</strong> <span id="detailParent"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Spouse:</strong> <span id="detailSpouse"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Children:</strong> <span id="detailChildren"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Siblings:</strong> <span id="detailSiblings"></span>
+    </div>
+    <div class="detail-item">
+      <strong>Biography:</strong> <span id="detailNotes"></span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p id="footer-copyright">&copy; 2025 Rao Family. All Rights Reserved.</p>
+      <p id="footer-tagline">Preserving our legacy for future generations</p>
+      <div class="footer-links" id="footer-links">
+        <!-- Footer links will be loaded dynamically -->
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

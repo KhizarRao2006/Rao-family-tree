@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Rao Family Dynasty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark-gold: #b8941f;
+            --burgundy: #722f37;
+            --charcoal: #2c2c2c;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--charcoal) 0%, #3a3a3a 100%);
+            color: var(--gold);
+            padding: 20px 0;
+            border-bottom: 4px solid var(--gold);
+        }
+        
+        .admin-sidebar {
+            background: white;
+            min-height: calc(100vh - 80px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            border-right: 1px solid #dee2e6;
+        }
+        
+        .admin-content {
+            padding: 20px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--charcoal);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-pills .nav-link:hover {
+            background-color: #e9ecef;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--charcoal) 0%, #3a3a3a 100%);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .btn-admin {
+            background: linear-gradient(to bottom, var(--gold), var(--dark-gold));
+            color: var(--charcoal);
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-admin:hover {
+            background: linear-gradient(to bottom, var(--dark-gold), var(--gold));
+            color: var(--charcoal);
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 2px solid var(--gold);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid var(--gold);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--burgundy);
+            font-family: 'Cinzel', serif;
+        }
+        
+        .stat-label {
+            color: var(--charcoal);
+            font-size: 0.9rem;
+        }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .database-table {
+            font-size: 0.85rem;
+        }
+        
+        .json-viewer {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="login-container">
+            <div class="text-center mb-4">
+                <i class="fas fa-crown fa-3x mb-3" style="color: var(--gold);"></i>
+                <h2 style="font-family: 'Cinzel', serif; color: var(--burgundy);">Admin Panel</h2>
+                <p class="text-muted">Rao Family Dynasty</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-admin w-100">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </button>
+            </form>
+            
+            <div id="loginMessage" class="mt-3"></div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 style="font-family: 'Cinzel', serif; margin: 0;">
+                            <i class="fas fa-crown me-2"></i>Rao Family Admin
+                        </h1>
+                    </div>
+                    <div class="col-auto">
+                        <span id="adminWelcome" class="me-3">Welcome, Admin</span>
+                        <button id="logoutBtn" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 admin-sidebar">
+                    <div class="d-flex flex-column flex-shrink-0 p-3">
+                        <ul class="nav nav-pills flex-column mb-auto">
+                            <li class="nav-item">
+                                <a href="#dashboard" class="nav-link active" data-tab="dashboard">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a href="#familyManagement" class="nav-link" data-tab="familyManagement">
+                                    <i class="fas fa-users me-2"></i>Family Management
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#databaseViewer" class="nav-link" data-tab="databaseViewer">
+                                    <i class="fas fa-database me-2"></i>Database Viewer
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#siteContent" class="nav-link" data-tab="siteContent">
+                                    <i class="fas fa-globe me-2"></i>Site Content
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#databaseExport" class="nav-link" data-tab="databaseExport">
+                                    <i class="fas fa-download me-2"></i>Data Export
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 admin-content">
+                    <div class="tab-content">
+                        <!-- Dashboard Tab -->
+                        <div class="tab-pane fade show active" id="dashboard">
+                            <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </h2>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number" id="totalMembers">0</div>
+                                        <div class="stat-label">Total Members</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number" id="livingMembers">0</div>
+                                        <div class="stat-label">Living Members</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number" id="totalGenerations">0</div>
+                                        <div class="stat-label">Generations</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="stat-card">
+                                        <div class="stat-number" id="databaseSize">0</div>
+                                        <div class="stat-label">Database Records</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Quick Actions</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-grid gap-2">
+                                                <button id="addMemberBtn" class="btn btn-admin">
+                                                    <i class="fas fa-user-plus me-2"></i>Add Family Member
+                                                </button>
+                                                <button id="viewDatabaseBtn" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-database me-2"></i>View Database
+                                                </button>
+                                                <button id="exportDataBtn" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-download me-2"></i>Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Recent Activity</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="recentActivity">
+                                                <p class="text-muted">No recent activity</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Family Management Tab -->
+                        <div class="tab-pane fade" id="familyManagement">
+                            <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
+                                <i class="fas fa-users me-2"></i>Family Management
+                            </h2>
+                            
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Family Members</h5>
+                                    <button id="addMemberHeaderBtn" class="btn btn-admin btn-sm">
+                                        <i class="fas fa-plus me-1"></i>Add Member
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Generation</th>
+                                                    <th>Birth Year</th>
+                                                    <th>Status</th>
+                                                    <th>Parent</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="familyTableBody">
+                                                <!-- Family data will be loaded here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Database Viewer Tab -->
+                        <div class="tab-pane fade" id="databaseViewer">
+                            <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
+                                <i class="fas fa-database me-2"></i>Database Viewer
+                            </h2>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Database Tables</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="databaseTables">
+                                        <p class="text-muted">Loading database information...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Table Data</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="tableData">
+                                        <p class="text-muted">Select a table to view data</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Site content -->
+                        <div class="tab-pane fade" id="siteContent">
+                            <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
+                                <i class="fas fa-globe me-2"></i>Site Content Management
+                            </h2>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Header Content</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="siteTitle" class="form-label">Site Title</label>
+                                            <input type="text" class="form-control" id="siteTitle" placeholder="Rao Family Dynasty">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="siteSubtitle" class="form-label">Subtitle</label>
+                                            <input type="text" class="form-control" id="siteSubtitle" placeholder="Established 1895 • Honoring Our Heritage">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Footer Content</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="footerCopyright" class="form-label">Copyright Text</label>
+                                            <input type="text" class="form-control" id="footerCopyright" placeholder="© 2025 Rao Family. All Rights Reserved.">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="footerTagline" class="form-label">Tagline</label>
+                                            <input type="text" class="form-control" id="footerTagline" placeholder="Preserving our legacy for future generations">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Footer Links</label>
+                                        <div id="footerLinksContainer">
+                                            <!-- Dynamic footer links will be added here -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addFooterLink">
+                                            <i class="fas fa-plus me-1"></i>Add Link
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Family History</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="historyTitle" class="form-label">History Title</label>
+                                        <input type="text" class="form-control" id="historyTitle" placeholder="Family History">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="historyIntroduction" class="form-label">Introduction</label>
+                                        <textarea class="form-control" id="historyIntroduction" rows="3" placeholder="The Rao family traces its lineage back to the late 19th century..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Achievements</label>
+                                        <div id="achievementsContainer">
+                                            <!-- Dynamic achievements will be added here -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addAchievement">
+                                            <i class="fas fa-plus me-1"></i>Add Achievement
+                                        </button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="historyValues" class="form-label">Family Values</label>
+                                        <textarea class="form-control" id="historyValues" rows="3" placeholder="The Rao family is built on principles of integrity..."></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="historyMotto" class="form-label">Family Motto</label>
+                                                <input type="text" class="form-control" id="historyMotto" placeholder="Honor the past, serve the present, build the future.">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="historyCrest" class="form-label">Crest Symbolism</label>
+                                                <textarea class="form-control" id="historyCrest" rows="3" placeholder="The crown represents leadership and nobility..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Family Timeline</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="timelineTitle" class="form-label">Timeline Title</label>
+                                        <input type="text" class="form-control" id="timelineTitle" placeholder="Family Timeline">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Timeline Events</label>
+                                        <div id="timelineEventsContainer">
+                                            <!-- Dynamic timeline events will be added here -->
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addTimelineEvent">
+                                            <i class="fas fa-plus me-1"></i>Add Event
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Statistics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="yearsLegacy" class="form-label">Years of Legacy</label>
+                                        <input type="text" class="form-control" id="yearsLegacy" placeholder="127">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="button" id="saveSiteContent" class="btn btn-admin">
+                                    <i class="fas fa-save me-2"></i>Save All Site Content
+                                </button>
+                                <button type="button" id="resetSiteContent" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-undo me-2"></i>Reset to Defaults
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Database Export Tab -->
+                        <div class="tab-pane fade" id="databaseExport">
+                            <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
+                                <i class="fas fa-download me-2"></i>Data Export
+                            </h2>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Export Options</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-file-export fa-3x mb-3 text-primary"></i>
+                                                    <h5>JSON Export</h5>
+                                                    <p class="text-muted">Export complete database as JSON file</p>
+                                                    <button id="exportJsonBtn" class="btn btn-admin">
+                                                        <i class="fas fa-download me-2"></i>Export JSON
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-code fa-3x mb-3 text-success"></i>
+                                                    <h5>Raw Data View</h5>
+                                                    <p class="text-muted">View raw database data in JSON format</p>
+                                                    <button id="viewRawDataBtn" class="btn btn-outline-secondary">
+                                                        <i class="fas fa-eye me-2"></i>View Raw Data
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4" id="exportResult"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Family Member Modal -->
+    <div class="modal fade" id="memberModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add Family Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="memberForm">
+                        <input type="hidden" id="memberId">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="birthYear" class="form-label">Birth Year</label>
+                                <input type="number" class="form-control" id="birthYear">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="deathYear" class="form-label">Death Year</label>
+                                <input type="number" class="form-control" id="deathYear">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="generation" class="form-label">Generation *</label>
+                                <select class="form-select" id="generation" required>
+                                    <option value="">Select Generation</option>
+                                    <option value="1">1st Generation</option>
+                                    <option value="2">2nd Generation</option>
+                                    <option value="3">3rd Generation</option>
+                                    <option value="4">4th Generation</option>
+                                    <option value="5">5th Generation</option>
+                                    <option value="6">6th Generation</option>
+                                    <option value="7">7th Generation</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="parent" class="form-label">Parent</label>
+                                <select class="form-select" id="parent">
+                                    <option value="">Select Parent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">Photo URL</label>
+                            <input type="url" class="form-control" id="photo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="biography" class="form-label">Biography</label>
+                            <textarea class="form-control" id="biography" rows="4"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="saveMemberBtn" class="btn btn-admin">Save Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

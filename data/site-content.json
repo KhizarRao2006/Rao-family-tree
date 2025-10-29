@@ -1,0 +1,49 @@
+{
+  "header": {
+    "title": "RAO FAMILY ",
+    "subtitle": "Established 1800s • Honoring Our Heritage"
+  },
+  "footer": {
+    "copyright": "© 2025 Rao Family. All Rights Reserved.",
+    "tagline": "Preserving our legacy for future generations",
+    "links": [
+      {
+        "text": "Admin Login",
+        "url": "/admin"
+      }
+    ]
+  },
+  "history": {
+    "title": "Family History",
+    "introduction": "The Rao family traces its lineage back to the late 19th century, with Nana / Nanha establishing the family dynasty in 1895. Through generations, the family has maintained its traditions while adapting to modern times.",
+    "achievements": [
+      "Establishment of the family business empire in the early 20th century",
+      "Philanthropic contributions to education and healthcare",
+      "Preservation of family heritage and traditions across generations",
+      "Expansion of family influence across regions"
+    ],
+    "values": "The Rao family is built on principles of integrity, respect for elders, commitment to education, and dedication to community service. These values have been passed down through generations, forming the foundation of the family's enduring legacy.",
+    "motto": "Honor the past, serve the present, build the future.",
+    "crestSymbolism": "The crown represents leadership and nobility, while the golden background symbolizes prosperity and the enduring legacy of the family."
+  },
+  "timeline": {
+    "title": "Family Timeline",
+    "events": [
+      {
+        "year": "1970",
+        "description": "Ashraf Rao"
+      },
+      {
+        "year": "2000",
+        "description": "Muhammad Bin Ashraf Rao becomes head of family."
+      },
+      {
+        "year": "2023",
+        "description": "Khizar Bin Muhammad Rao emerges as the next generation leader with interests in technology and sustainability."
+      }
+    ]
+  },
+  "stats": {
+    "years_legacy": "127"
+  }
+}
