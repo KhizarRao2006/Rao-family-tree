@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const siteContentRoutes = require('./site-content'); // Add this line
+
+// Import ALL routes
+const familyRoutes = require('./family');
+const adminRoutes = require('./admin');
+const siteContentRoutes = require('./site-content');
 
 /**
  * @route GET /api
@@ -43,6 +47,10 @@ router.get('/health', (req, res) => {
     });
   }
 });
-router.use('/site-content', siteContentRoutes); // Add this line
+
+// Use ALL routes
+router.use('/family', familyRoutes);
+router.use('/admin', adminRoutes);
+router.use('/site-content', siteContentRoutes);
 
 module.exports = router;

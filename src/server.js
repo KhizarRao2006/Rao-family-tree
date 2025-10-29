@@ -43,22 +43,37 @@ app.use(session({
 // Logging
 app.use(morgan);
 
-// Serve static files
+// Serve static files FIRST
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Routes
-app.use('/api', require('./routes/index'));
-app.use('/api/family', require('./routes/family'));
-app.use('/api/admin', require('./routes/admin'));
-app.use('/api/site-content', require('./routes/site-content'));
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Rao Family Tree is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
-// Serve admin panel
+// API Routes - FIXED: Remove duplicate routes
+app.use('/api', require('./routes/index'));
+
+// Explicit admin route - MUST come before catch-all
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin.html'));
 });
 
-// Catch all handler for SPA
+// Serve index.html for the root route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Catch all handler for SPA - MUST be last
 app.get('*', (req, res) => {
+  // Don't catch admin route
+  if (req.path.startsWith('/admin')) {
+    return res.status(404).send('Admin page not found');
+  }
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
@@ -96,11 +111,12 @@ async function initializeDatabase() {
 
 // Initialize database and start server
 initializeDatabase().then(() => {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📊 Environment: ${process.env.NODE_ENV}`);
+    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 http://localhost:${PORT}`);
     console.log(`👑 Admin Panel: http://localhost:${PORT}/admin`);
+    console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
   });
 });
 
