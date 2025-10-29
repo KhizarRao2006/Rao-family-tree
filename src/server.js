@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Security middleware - UPDATED CSP
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -20,7 +21,7 @@ app.use(helmet({
       scriptSrcAttr: ["'unsafe-inline'"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"]
+      connectSrc: ["'self'", "https://cdn.jsdelivr.net"]
     }
   }
 }));
@@ -75,6 +76,7 @@ app.get('/health', (req, res) => {
 // API Routes - FIXED: Remove duplicate routes
 app.use('/api', require('./routes/index'));
 
+app.use('/backups', express.static(path.join(__dirname, '../backups')));
 // Explicit admin route - MUST come before catch-all
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin.html'));

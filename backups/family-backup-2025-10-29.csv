@@ -1,0 +1,15 @@
+=== family_members ===
+"id","first_name","last_name","birth_year","death_year","generation","parent_id","photo_url","biography","is_alive","created_at","updated_at"
+1,"Nana","Rao",1850,1920,1,,,,0,"2025-10-27 13:28:43","2025-10-28 11:05:18"
+2,"Kabeer","Rao",1880,1950,2,1,,,0,"2025-10-27 13:28:43","2025-10-28 11:05:23"
+3,"Mubarak","Rao",1910,1980,3,2,,"Migrated to Pakistan From India",0,"2025-10-27 13:28:43","2025-10-28 11:05:47"
+4,"Ashraf","Rao",1940,,4,3,,"Modernized family business ventures while preserving traditional values. Successfully navigated the family through economic changes and global expansion.",1,"2025-10-27 13:28:43","2025-10-28 11:04:34"
+5,"Muhammad Bin Ashraf","Rao",1981,,5,4,,"Current head of family enterprises. Focused on global expansion and digital transformation. Under his leadership, the family business has entered new international markets.",1,"2025-10-27 13:28:43","2025-10-28 11:04:48"
+6,"Khizar Bin Muhammad","Rao",2006,,6,5,,"Next generation leader with interests in technology.",1,"2025-10-27 13:28:43","2025-10-28 11:05:05"
+7,"Umar","Rao",2008,,6,5,,,1,"2025-10-28 11:07:35","2025-10-28 11:07:35"
+8,"Yahya","Rao",2012,,6,5,,,1,"2025-10-28 11:08:06","2025-10-28 11:08:06"
+9,"Noman","Rao",1985,,5,4,,,1,"2025-10-28 11:08:54","2025-10-28 11:18:24"
+10,"Sohaib","Rao",1990,,5,4,,,1,"2025-10-28 11:09:27","2025-10-28 11:09:27"
+11,"Adnan","Rao",1995,,5,4,,,1,"2025-10-28 11:09:54","2025-10-28 11:09:54"
+12,"Anas","Rao",2019,,6,9,,,1,"2025-10-28 11:10:40","2025-10-28 11:10:40"
+

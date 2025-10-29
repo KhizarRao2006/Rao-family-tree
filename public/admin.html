@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,32 +15,32 @@
             --burgundy: #722f37;
             --charcoal: #2c2c2c;
         }
-        
+
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         .admin-header {
             background: linear-gradient(135deg, var(--charcoal) 0%, #3a3a3a 100%);
             color: var(--gold);
             padding: 20px 0;
             border-bottom: 4px solid var(--gold);
         }
-        
+
         .admin-sidebar {
             background: white;
             min-height: calc(100vh - 80px);
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             border-right: 1px solid #dee2e6;
         }
-        
+
         .admin-content {
             padding: 20px;
             background: #f8f9fa;
             min-height: calc(100vh - 80px);
         }
-        
+
         .nav-pills .nav-link {
             color: var(--charcoal);
             padding: 12px 20px;
@@ -47,24 +48,24 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
+
         .nav-pills .nav-link:hover {
             background-color: #e9ecef;
         }
-        
+
         .nav-pills .nav-link.active {
             background: linear-gradient(135deg, var(--gold), var(--dark-gold));
             color: var(--charcoal);
             font-weight: 600;
         }
-        
+
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        
+
         .card-header {
             background: linear-gradient(135deg, var(--charcoal) 0%, #3a3a3a 100%);
             color: white;
@@ -72,29 +73,29 @@
             padding: 15px 20px;
             font-family: 'Cinzel', serif;
         }
-        
+
         .btn-admin {
             background: linear-gradient(to bottom, var(--gold), var(--dark-gold));
             color: var(--charcoal);
             border: none;
             font-weight: 600;
         }
-        
+
         .btn-admin:hover {
             background: linear-gradient(to bottom, var(--dark-gold), var(--gold));
             color: var(--charcoal);
         }
-        
+
         .login-container {
             max-width: 400px;
             margin: 100px auto;
             padding: 40px;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             border: 2px solid var(--gold);
         }
-        
+
         .stat-card {
             background: white;
             border-radius: 10px;
@@ -102,28 +103,28 @@
             text-align: center;
             border-left: 4px solid var(--gold);
         }
-        
+
         .stat-number {
             font-size: 2.5rem;
             font-weight: bold;
             color: var(--burgundy);
             font-family: 'Cinzel', serif;
         }
-        
+
         .stat-label {
             color: var(--charcoal);
             font-size: 0.9rem;
         }
-        
+
         .table-responsive {
             border-radius: 10px;
             overflow: hidden;
         }
-        
+
         .database-table {
             font-size: 0.85rem;
         }
-        
+
         .json-viewer {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -140,6 +141,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Login Screen -->
     <div id="loginScreen">
@@ -149,7 +151,7 @@
                 <h2 style="font-family: 'Cinzel', serif; color: var(--burgundy);">Admin Panel</h2>
                 <p class="text-muted">Rao Family Dynasty</p>
             </div>
-            
+
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
@@ -163,7 +165,7 @@
                     <i class="fas fa-sign-in-alt me-2"></i>Login
                 </button>
             </form>
-            
+
             <div id="loginMessage" class="mt-3"></div>
         </div>
     </div>
@@ -179,6 +181,9 @@
                             <i class="fas fa-crown me-2"></i>Rao Family Admin
                         </h1>
                     </div>
+                    <button id="viewSiteBtn" class="btn btn-outline-light btn-sm ms-2" target="_blank">
+                        <i class="fas fa-external-link-alt me-1"></i>View Site
+                    </button>
                     <div class="col-auto">
                         <span id="adminWelcome" class="me-3">Welcome, Admin</span>
                         <button id="logoutBtn" class="btn btn-outline-light btn-sm">
@@ -200,7 +205,7 @@
                                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a>
                             </li>
-                            
+
                             <li class="nav-item">
                                 <a href="#familyManagement" class="nav-link" data-tab="familyManagement">
                                     <i class="fas fa-users me-2"></i>Family Management
@@ -233,7 +238,7 @@
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
                                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                             </h2>
-                            
+
                             <div class="row mb-4">
                                 <div class="col-md-3">
                                     <div class="stat-card">
@@ -260,7 +265,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="card">
@@ -302,7 +307,7 @@
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
                                 <i class="fas fa-users me-2"></i>Family Management
                             </h2>
-                            
+
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h5 class="mb-0">Family Members</h5>
@@ -338,7 +343,7 @@
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
                                 <i class="fas fa-database me-2"></i>Database Viewer
                             </h2>
-                            
+
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="mb-0">Database Tables</h5>
@@ -349,7 +354,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Table Data</h5>
@@ -366,7 +371,22 @@
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
                                 <i class="fas fa-globe me-2"></i>Site Content Management
                             </h2>
-                            
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Header Layout Options</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="headerLayout" class="form-label">Header Layout</label>
+                                        <select class="form-select" id="headerLayout">
+                                            <option value="default">Default (Centered)</option>
+                                            <option value="left">Left Aligned</option>
+                                            <option value="right">Right Aligned</option>
+                                            <option value="grid">Grid Layout</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="mb-0">Header Content</h5>
@@ -375,14 +395,43 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="siteTitle" class="form-label">Site Title</label>
-                                            <input type="text" class="form-control" id="siteTitle" placeholder="Rao Family Dynasty">
+                                            <input type="text" class="form-control" id="siteTitle"
+                                                placeholder="Rao Family Dynasty">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="siteSubtitle" class="form-label">Subtitle</label>
-                                            <input type="text" class="form-control" id="siteSubtitle" placeholder="Established 1895 • Honoring Our Heritage">
+                                            <input type="text" class="form-control" id="siteSubtitle"
+                                                placeholder="Established 1895 • Honoring Our Heritage">
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Custom Content Sections</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="customSectionsContainer">
+                                        <!-- Custom sections will be added here -->
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                        id="addCustomSection">
+                                        <i class="fas fa-plus me-1"></i>Add Custom Section
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="button" id="setAsDefaultBtn" class="btn btn-warning">
+                                    <i class="fas fa-star me-2"></i>Set Current Content as Default
+                                </button>
+                                <button type="button" id="saveSiteContent" class="btn btn-admin ms-2">
+                                    <i class="fas fa-save me-2"></i>Save All Site Content
+                                </button>
+                                <button type="button" id="resetSiteContent" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-undo me-2"></i>Reset to Defaults
+                                </button>
                             </div>
 
                             <div class="card mt-4">
@@ -393,11 +442,13 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="footerCopyright" class="form-label">Copyright Text</label>
-                                            <input type="text" class="form-control" id="footerCopyright" placeholder="© 2025 Rao Family. All Rights Reserved.">
+                                            <input type="text" class="form-control" id="footerCopyright"
+                                                placeholder="© 2025 Rao Family. All Rights Reserved.">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="footerTagline" class="form-label">Tagline</label>
-                                            <input type="text" class="form-control" id="footerTagline" placeholder="Preserving our legacy for future generations">
+                                            <input type="text" class="form-control" id="footerTagline"
+                                                placeholder="Preserving our legacy for future generations">
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -405,7 +456,8 @@
                                         <div id="footerLinksContainer">
                                             <!-- Dynamic footer links will be added here -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addFooterLink">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                            id="addFooterLink">
                                             <i class="fas fa-plus me-1"></i>Add Link
                                         </button>
                                     </div>
@@ -419,36 +471,42 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="historyTitle" class="form-label">History Title</label>
-                                        <input type="text" class="form-control" id="historyTitle" placeholder="Family History">
+                                        <input type="text" class="form-control" id="historyTitle"
+                                            placeholder="Family History">
                                     </div>
                                     <div class="mb-3">
                                         <label for="historyIntroduction" class="form-label">Introduction</label>
-                                        <textarea class="form-control" id="historyIntroduction" rows="3" placeholder="The Rao family traces its lineage back to the late 19th century..."></textarea>
+                                        <textarea class="form-control" id="historyIntroduction" rows="3"
+                                            placeholder="The Rao family traces its lineage back to the late 19th century..."></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Achievements</label>
                                         <div id="achievementsContainer">
                                             <!-- Dynamic achievements will be added here -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addAchievement">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                            id="addAchievement">
                                             <i class="fas fa-plus me-1"></i>Add Achievement
                                         </button>
                                     </div>
                                     <div class="mb-3">
                                         <label for="historyValues" class="form-label">Family Values</label>
-                                        <textarea class="form-control" id="historyValues" rows="3" placeholder="The Rao family is built on principles of integrity..."></textarea>
+                                        <textarea class="form-control" id="historyValues" rows="3"
+                                            placeholder="The Rao family is built on principles of integrity..."></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="historyMotto" class="form-label">Family Motto</label>
-                                                <input type="text" class="form-control" id="historyMotto" placeholder="Honor the past, serve the present, build the future.">
+                                                <input type="text" class="form-control" id="historyMotto"
+                                                    placeholder="Honor the past, serve the present, build the future.">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="historyCrest" class="form-label">Crest Symbolism</label>
-                                                <textarea class="form-control" id="historyCrest" rows="3" placeholder="The crown represents leadership and nobility..."></textarea>
+                                                <textarea class="form-control" id="historyCrest" rows="3"
+                                                    placeholder="The crown represents leadership and nobility..."></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -462,14 +520,16 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="timelineTitle" class="form-label">Timeline Title</label>
-                                        <input type="text" class="form-control" id="timelineTitle" placeholder="Family Timeline">
+                                        <input type="text" class="form-control" id="timelineTitle"
+                                            placeholder="Family Timeline">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Timeline Events</label>
                                         <div id="timelineEventsContainer">
                                             <!-- Dynamic timeline events will be added here -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addTimelineEvent">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                            id="addTimelineEvent">
                                             <i class="fas fa-plus me-1"></i>Add Event
                                         </button>
                                     </div>
@@ -500,49 +560,77 @@
                         <!-- Database Export Tab -->
                         <div class="tab-pane fade" id="databaseExport">
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
-                                <i class="fas fa-download me-2"></i>Data Export
+                                <i class="fas fa-download me-2"></i>Data Export & Import
                             </h2>
-                            
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Export Options</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="card">
-                                                <div class="card-body text-center">
-                                                    <i class="fas fa-file-export fa-3x mb-3 text-primary"></i>
-                                                    <h5>JSON Export</h5>
-                                                    <p class="text-muted">Export complete database as JSON file</p>
-                                                    <button id="exportJsonBtn" class="btn btn-admin">
-                                                        <i class="fas fa-download me-2"></i>Export JSON
-                                                    </button>
-                                                </div>
-                                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Export Options</h5>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="card">
-                                                <div class="card-body text-center">
-                                                    <i class="fas fa-code fa-3x mb-3 text-success"></i>
-                                                    <h5>Raw Data View</h5>
-                                                    <p class="text-muted">View raw database data in JSON format</p>
-                                                    <button id="viewRawDataBtn" class="btn btn-outline-secondary">
-                                                        <i class="fas fa-eye me-2"></i>View Raw Data
-                                                    </button>
-                                                </div>
+                                        <div class="card-body">
+                                            <div class="d-grid gap-2">
+                                                <button id="exportJsonBtn" class="btn btn-admin">
+                                                    <i class="fas fa-file-export me-2"></i>Export as JSON
+                                                </button>
+                                                <button id="exportCsvBtn" class="btn btn-outline-primary">
+                                                    <i class="fas fa-file-csv me-2"></i>Export as CSV
+                                                </button>
+                                                <button id="createBackupBtn" class="btn btn-outline-success">
+                                                    <i class="fas fa-database me-2"></i>Create Manual Backup
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="mt-4" id="exportResult"></div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Import Options</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="importFile" class="form-label">Select File to Import</label>
+                                                <input type="file" class="form-control" id="importFile"
+                                                    accept=".json,.csv">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="importFormat" class="form-label">Import Format</label>
+                                                <select class="form-select" id="importFormat">
+                                                    <option value="json">JSON</option>
+                                                    <option value="csv">CSV</option>
+                                                </select>
+                                            </div>
+                                            <button id="importDataBtn" class="btn btn-warning w-100">
+                                                <i class="fas fa-file-import me-2"></i>Import Data
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="card mt-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Available Backups</h5>
+                                    <button id="refreshBackupsBtn" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="backupFilesList">
+                                        <p class="text-muted">Loading backup files...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4" id="exportResult"></div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Family Member Modal -->
@@ -618,4 +706,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="admin.js"></script>
 </body>
+
 </html>

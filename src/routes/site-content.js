@@ -2,15 +2,18 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
+const database = require('../database/database');
 
 // Path to store site content
 const siteContentPath = path.join(__dirname, '../../data/site-content.json');
+const defaultSiteContentPath = path.join(__dirname, '../../data/default-site-content.json');
 
 // Default site content structure
 const defaultSiteContent = {
   header: {
     title: "RAO FAMILY DYNASTY",
-    subtitle: "Established 1895 • Honoring Our Heritage"
+    subtitle: "Established 1895 • Honoring Our Heritage",
+    layout: "default" // Added layout option
   },
   footer: {
     copyright: "© 2025 Rao Family. All Rights Reserved.",
@@ -47,6 +50,10 @@ const defaultSiteContent = {
   },
   stats: {
     years_legacy: "127"
+  },
+  customContent: {
+    // For storing custom paragraphs/lines
+    sections: []
   }
 };
 
@@ -68,6 +75,18 @@ async function readSiteContent() {
 // Helper function to write site content
 async function writeSiteContent(content) {
   await fs.writeFile(siteContentPath, JSON.stringify(content, null, 2));
+}
+
+// Helper function to set current content as default
+async function setCurrentAsDefault() {
+  try {
+    const currentContent = await readSiteContent();
+    await fs.writeFile(defaultSiteContentPath, JSON.stringify(currentContent, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error setting current content as default:', error);
+    throw error;
+  }
 }
 
 // GET /api/site-content - Get current site content
@@ -112,6 +131,85 @@ router.post('/', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: 'Failed to update site content' 
+    });
+  }
+});
+
+// POST /api/site-content/set-default - Set current content as default
+router.post('/set-default', async (req, res) => {
+  try {
+    await setCurrentAsDefault();
+    
+    res.json({ 
+      success: true, 
+      message: 'Current content set as default successfully'
+    });
+  } catch (error) {
+    console.error('Error setting content as default:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to set current content as default' 
+    });
+  }
+});
+
+// POST /api/site-content/reset-to-default - Reset to default content
+router.post('/reset-to-default', async (req, res) => {
+  try {
+    await writeSiteContent(defaultSiteContent);
+    
+    res.json({ 
+      success: true, 
+      message: 'Site content reset to default successfully',
+      data: defaultSiteContent
+    });
+  } catch (error) {
+    console.error('Error resetting to default content:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to reset to default content' 
+    });
+  }
+});
+
+// POST /api/site-content/custom - Add custom content
+router.post('/custom', async (req, res) => {
+  try {
+    const { section, content, type = 'paragraph' } = req.body;
+    
+    if (!section || !content) {
+      return res.status(400).json({
+        success: false,
+        error: 'Section and content are required'
+      });
+    }
+
+    const siteContent = await readSiteContent();
+    
+    if (!siteContent.customContent) {
+      siteContent.customContent = { sections: [] };
+    }
+
+    // Add or update custom content
+    const existingIndex = siteContent.customContent.sections.findIndex(s => s.section === section);
+    if (existingIndex >= 0) {
+      siteContent.customContent.sections[existingIndex] = { section, content, type };
+    } else {
+      siteContent.customContent.sections.push({ section, content, type });
+    }
+
+    await writeSiteContent(siteContent);
+    
+    res.json({ 
+      success: true, 
+      message: 'Custom content added successfully',
+      data: siteContent.customContent
+    });
+  } catch (error) {
+    console.error('Error adding custom content:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to add custom content' 
     });
   }
 });

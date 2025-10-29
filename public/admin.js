@@ -3,12 +3,327 @@ class AdminPanel {
         this.apiBase = '/api';
         this.isAuthenticated = false;
         this.currentEditingId = null;
+        this.backupInterval = null;
         this.init();
     }
 
     init() {
         this.setupEventListeners();
         this.checkAuthStatus();
+
+        // Setup backup automation when authenticated
+        if (this.isAuthenticated) {
+            this.setupBackupAutomation();
+        }
+    }
+
+
+    setupBackupAutomation() {
+        // Clear existing interval
+        if (this.backupInterval) {
+            clearInterval(this.backupInterval);
+        }
+
+        // Set up backup every 4 days (4 days * 24 hours * 60 minutes * 60 seconds * 1000 ms)
+        this.backupInterval = setInterval(() => {
+            this.createAutoBackup();
+        }, 4 * 24 * 60 * 60 * 1000);
+    }
+
+    setupViewSite() {
+        document.getElementById('viewSiteBtn').addEventListener('click', () => {
+            const siteUrl = window.location.origin;
+            window.open(siteUrl, '_blank');
+        });
+    }
+
+    async setCurrentAsDefault() {
+        if (confirm('Are you sure you want to set the current content as the default? This will be used when the system starts.')) {
+            try {
+                const response = await this.apiCall('/site-content/set-default', {
+                    method: 'POST'
+                });
+
+                this.showNotification(response.message, 'success');
+            } catch (error) {
+                console.error('Failed to set as default:', error);
+            }
+        }
+    }
+    // Add these methods to the AdminPanel class after the constructor
+
+    // Manual backup method
+    async createManualBackup() {
+        try {
+            const response = await this.apiCall('/admin/database-backup');
+            this.showNotification('Backup created successfully!', 'success');
+            this.loadBackupFiles(); // Refresh backup list
+        } catch (error) {
+            console.error('Backup failed:', error);
+            this.showNotification('Backup failed', 'error');
+        }
+    }
+
+    // Auto backup method
+    async createAutoBackup() {
+        try {
+            const response = await this.apiCall('/admin/database-backup');
+            console.log('Auto backup created:', response.message);
+        } catch (error) {
+            console.error('Auto backup failed:', error);
+        }
+    }
+
+    // Import data method
+    async importData() {
+        const fileInput = document.getElementById('importFile');
+        const formatSelect = document.getElementById('importFormat');
+
+        if (!fileInput || !fileInput.files.length) {
+            this.showNotification('Please select a file to import', 'error');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const format = formatSelect.value;
+
+        try {
+            const fileContent = await this.readFileAsText(file);
+            let importData;
+
+            if (format === 'json') {
+                importData = JSON.parse(fileContent);
+            } else {
+                this.showNotification('CSV import not yet implemented', 'error');
+                return;
+            }
+
+            if (confirm('WARNING: This will replace all current data. Are you sure you want to proceed?')) {
+                const response = await this.apiCall('/admin/database-import', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        importData: importData,
+                        format: format
+                    })
+                });
+
+                this.showNotification('Data imported successfully!', 'success');
+                fileInput.value = ''; // Clear file input
+            }
+        } catch (error) {
+            console.error('Import failed:', error);
+            this.showNotification('Import failed: ' + error.message, 'error');
+        }
+    }
+
+    // Helper method to read file
+    readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.onerror = e => reject(new Error('Failed to read file'));
+            reader.readAsText(file);
+        });
+    }
+
+    // Custom sections methods
+    addCustomSection() {
+        if (!this.siteContent.customContent) {
+            this.siteContent.customContent = { sections: [] };
+        }
+
+        this.siteContent.customContent.sections.push({
+            section: `custom-section-${Date.now()}`,
+            content: '',
+            type: 'paragraph'
+        });
+
+        this.renderCustomSections();
+    }
+
+    renderCustomSections() {
+        const container = document.getElementById('customSectionsContainer');
+        if (!container) return;
+
+        const sections = this.siteContent.customContent?.sections || [];
+
+        container.innerHTML = sections.map((section, index) => `
+        <div class="card mb-3 custom-section-item" data-index="${index}">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Section ID</label>
+                        <input type="text" class="form-control section-id" value="${section.section}" placeholder="section-id">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select section-type">
+                            <option value="paragraph" ${section.type === 'paragraph' ? 'selected' : ''}>Paragraph</option>
+                            <option value="line" ${section.type === 'line' ? 'selected' : ''}>Line</option>
+                            <option value="span" ${section.type === 'span' ? 'selected' : ''}>Span</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-control section-content" rows="2" placeholder="Content...">${section.content}</textarea>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-outline-danger remove-custom-section w-100">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+        this.attachCustomSectionEvents();
+    }
+
+    attachCustomSectionEvents() {
+        document.querySelectorAll('.remove-custom-section').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const item = e.target.closest('.custom-section-item');
+                const index = parseInt(item.getAttribute('data-index'));
+                this.removeCustomSection(index);
+            });
+        });
+    }
+
+    removeCustomSection(index) {
+        if (this.siteContent.customContent?.sections) {
+            this.siteContent.customContent.sections.splice(index, 1);
+            this.renderCustomSections();
+        }
+    }
+
+    // Backup file operations
+    attachBackupFileEvents() {
+        document.querySelectorAll('.download-backup-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const fileName = e.target.closest('button').getAttribute('data-file');
+                this.downloadBackupFile(fileName);
+            });
+        });
+
+        document.querySelectorAll('.delete-backup-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const fileName = e.target.closest('button').getAttribute('data-file');
+                this.deleteBackupFile(fileName);
+            });
+        });
+    }
+
+    async downloadBackupFile(fileName) {
+        try {
+            const response = await fetch(`/backups/${fileName}`);
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            this.showNotification('Download failed', 'error');
+        }
+    }
+
+    async deleteBackupFile(fileName) {
+        if (confirm(`Are you sure you want to delete ${fileName}?`)) {
+            try {
+                // This would need a proper API endpoint
+                this.showNotification('Delete backup functionality not implemented yet', 'info');
+            } catch (error) {
+                console.error('Delete failed:', error);
+                this.showNotification('Delete failed', 'error');
+            }
+        }
+    }
+
+    // Enhanced database operations
+    setupEnhancedDatabaseOperations() {
+        // Add update and delete functionality to database viewer
+        document.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('edit-db-record')) {
+                const table = e.target.dataset.table;
+                const id = e.target.dataset.id;
+                this.editDatabaseRecord(table, id);
+            }
+
+            if (e.target.classList.contains('delete-db-record')) {
+                const table = e.target.dataset.table;
+                const id = e.target.dataset.id;
+                this.deleteDatabaseRecord(table, id);
+            }
+        });
+    }
+
+    async editDatabaseRecord(table, id) {
+        // Implementation for editing database records
+        this.showNotification(`Edit functionality for ${table} record ${id}`, 'info');
+    }
+
+    async deleteDatabaseRecord(table, id) {
+        if (confirm(`Are you sure you want to delete this record from ${table}?`)) {
+            try {
+                const response = await this.apiCall(`/admin/database/${table}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                this.showNotification(response.message, 'success');
+                this.loadTableData(table); // Reload the table data
+            } catch (error) {
+                console.error('Failed to delete record:', error);
+            }
+        }
+    }
+
+    // Backup files management
+    async loadBackupFiles() {
+        try {
+            const response = await this.apiCall('/admin/backup-files');
+            this.renderBackupFiles(response.data);
+        } catch (error) {
+            console.error('Failed to load backup files:', error);
+        }
+    }
+
+    renderBackupFiles(files) {
+        const container = document.getElementById('backupFilesList');
+
+        if (files.length === 0) {
+            container.innerHTML = '<p class="text-muted">No backup files found.</p>';
+            return;
+        }
+
+        container.innerHTML = files.map(file => `
+    <div class="card mb-2">
+      <div class="card-body py-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="mb-1">${file.name}</h6>
+            <small class="text-muted">
+              ${new Date(file.created).toLocaleString()} • 
+              ${(file.size / 1024).toFixed(2)} KB
+            </small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-primary download-backup-btn" data-file="${file.name}">
+              <i class="fas fa-download"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-backup-btn ms-1" data-file="${file.name}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
     }
 
     async loadSiteContent() {
@@ -97,7 +412,7 @@ class AdminPanel {
     renderFooterLinks() {
         const container = document.getElementById('footerLinksContainer');
         const links = this.siteContent.footer?.links || [];
-        
+
         container.innerHTML = links.map((link, index) => `
             <div class="row mb-2 footer-link-item" data-index="${index}">
                 <div class="col-md-5">
@@ -120,7 +435,7 @@ class AdminPanel {
     renderAchievements() {
         const container = document.getElementById('achievementsContainer');
         const achievements = this.siteContent.history?.achievements || [];
-        
+
         container.innerHTML = achievements.map((achievement, index) => `
             <div class="input-group mb-2 achievement-item" data-index="${index}">
                 <input type="text" class="form-control" value="${achievement}" placeholder="Achievement description">
@@ -136,7 +451,7 @@ class AdminPanel {
     renderTimelineEvents() {
         const container = document.getElementById('timelineEventsContainer');
         const events = this.siteContent.timeline?.events || [];
-        
+
         container.innerHTML = events.map((event, index) => `
             <div class="card mb-3 timeline-event-item" data-index="${index}">
                 <div class="card-body">
@@ -317,33 +632,24 @@ class AdminPanel {
         });
         return events;
     }
-    
+
     setupEventListeners() {
-         document.getElementById('saveSiteContent').addEventListener('click', () => {
-        this.saveSiteContent();
-    });
-
-    document.getElementById('resetSiteContent').addEventListener('click', () => {
-        if (confirm('Are you sure you want to reset all site content to defaults? This cannot be undone.')) {
-            this.siteContent = this.getDefaultSiteContent();
-            this.renderSiteContentForm();
-            this.showNotification('Site content reset to defaults.', 'info');
-        }
-    });
-
-    // Handle tab change for site content
-    this.handleTabChange = this.handleTabChange.bind(this);
-
         // Login form
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.login();
-        });
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.login();
+            });
+        }
 
         // Logout button
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            this.logout();
-        });
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                this.logout();
+            });
+        }
 
         // Tab navigation
         document.querySelectorAll('.nav-link[data-tab]').forEach(tab => {
@@ -354,44 +660,160 @@ class AdminPanel {
             });
         });
 
-        
         // Quick action buttons
-        document.getElementById('addMemberBtn').addEventListener('click', () => {
-            this.showTab('familyManagement');
-            this.openMemberModal();
-        });
+        const addMemberBtn = document.getElementById('addMemberBtn');
+        if (addMemberBtn) {
+            addMemberBtn.addEventListener('click', () => {
+                this.showTab('familyManagement');
+                this.openMemberModal();
+            });
+        }
 
-        document.getElementById('viewDatabaseBtn').addEventListener('click', () => {
-            this.showTab('databaseViewer');
-        });
+        const viewDatabaseBtn = document.getElementById('viewDatabaseBtn');
+        if (viewDatabaseBtn) {
+            viewDatabaseBtn.addEventListener('click', () => {
+                this.showTab('databaseViewer');
+            });
+        }
 
-        document.getElementById('exportDataBtn').addEventListener('click', () => {
-            this.showTab('databaseExport');
-        });
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        if (exportDataBtn) {
+            exportDataBtn.addEventListener('click', () => {
+                this.showTab('databaseExport');
+            });
+        }
 
         // Family management buttons
-        document.getElementById('addMemberHeaderBtn').addEventListener('click', () => {
-            this.openMemberModal();
-        });
+        const addMemberHeaderBtn = document.getElementById('addMemberHeaderBtn');
+        if (addMemberHeaderBtn) {
+            addMemberHeaderBtn.addEventListener('click', () => {
+                this.openMemberModal();
+            });
+        }
 
-        document.getElementById('saveMemberBtn').addEventListener('click', () => {
-            this.saveMember();
-        });
+        const saveMemberBtn = document.getElementById('saveMemberBtn');
+        if (saveMemberBtn) {
+            saveMemberBtn.addEventListener('click', () => {
+                this.saveMember();
+            });
+        }
 
         // Export buttons
-        document.getElementById('exportJsonBtn').addEventListener('click', () => {
-            this.exportAsJSON();
-        });
+        const exportJsonBtn = document.getElementById('exportJsonBtn');
+        if (exportJsonBtn) {
+            exportJsonBtn.addEventListener('click', () => {
+                this.exportAsJSON();
+            });
+        }
 
-        document.getElementById('viewRawDataBtn').addEventListener('click', () => {
-            this.viewRawData();
-        });
+        const viewRawDataBtn = document.getElementById('viewRawDataBtn');
+        if (viewRawDataBtn) {
+            viewRawDataBtn.addEventListener('click', () => {
+                this.viewRawData();
+            });
+        }
+
+        // Site content buttons
+        const saveSiteContentBtn = document.getElementById('saveSiteContent');
+        if (saveSiteContentBtn) {
+            saveSiteContentBtn.addEventListener('click', () => {
+                this.saveSiteContent();
+            });
+        }
+
+        const resetSiteContentBtn = document.getElementById('resetSiteContent');
+        if (resetSiteContentBtn) {
+            resetSiteContentBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset all site content to defaults? This cannot be undone.')) {
+                    this.siteContent = this.getDefaultSiteContent();
+                    this.renderSiteContentForm();
+                    this.showNotification('Site content reset to defaults.', 'info');
+                }
+            });
+        }
+
+        const setAsDefaultBtn = document.getElementById('setAsDefaultBtn');
+        if (setAsDefaultBtn) {
+            setAsDefaultBtn.addEventListener('click', () => {
+                this.setCurrentAsDefault();
+            });
+        }
+
+        const viewSiteBtn = document.getElementById('viewSiteBtn');
+        if (viewSiteBtn) {
+            viewSiteBtn.addEventListener('click', () => {
+                const siteUrl = window.location.origin;
+                window.open(siteUrl, '_blank');
+            });
+        }
+
+        // New backup and import buttons
+        const createBackupBtn = document.getElementById('createBackupBtn');
+        if (createBackupBtn) {
+            createBackupBtn.addEventListener('click', () => {
+                this.createManualBackup();
+            });
+        }
+
+        const refreshBackupsBtn = document.getElementById('refreshBackupsBtn');
+        if (refreshBackupsBtn) {
+            refreshBackupsBtn.addEventListener('click', () => {
+                this.loadBackupFiles();
+            });
+        }
+
+        const importDataBtn = document.getElementById('importDataBtn');
+        if (importDataBtn) {
+            importDataBtn.addEventListener('click', () => {
+                this.importData();
+            });
+        }
 
         // Modal close event
         const memberModal = document.getElementById('memberModal');
-        memberModal.addEventListener('hidden.bs.modal', () => {
-            this.currentEditingId = null;
-        });
+        if (memberModal) {
+            memberModal.addEventListener('hidden.bs.modal', () => {
+                this.currentEditingId = null;
+            });
+        }
+
+        // Dynamic form buttons (these will be attached when forms are rendered)
+        this.attachDynamicFormEvents();
+    }
+
+    // New method to attach dynamic form events
+    attachDynamicFormEvents() {
+        // Footer links
+        const addFooterLinkBtn = document.getElementById('addFooterLink');
+        if (addFooterLinkBtn) {
+            addFooterLinkBtn.addEventListener('click', () => {
+                this.addFooterLink();
+            });
+        }
+
+        // Achievements
+        const addAchievementBtn = document.getElementById('addAchievement');
+        if (addAchievementBtn) {
+            addAchievementBtn.addEventListener('click', () => {
+                this.addAchievement();
+            });
+        }
+
+        // Timeline events
+        const addTimelineEventBtn = document.getElementById('addTimelineEvent');
+        if (addTimelineEventBtn) {
+            addTimelineEventBtn.addEventListener('click', () => {
+                this.addTimelineEvent();
+            });
+        }
+
+        // Custom sections
+        const addCustomSectionBtn = document.getElementById('addCustomSection');
+        if (addCustomSectionBtn) {
+            addCustomSectionBtn.addEventListener('click', () => {
+                this.addCustomSection();
+            });
+        }
     }
 
     async apiCall(endpoint, options = {}) {
@@ -487,7 +909,9 @@ class AdminPanel {
     showAdminPanel() {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('adminWelcome').textContent = `Welcome, ${document.getElementById('username').value || 'Admin'}`;
+        document.getElementById('adminWelcome').textContent = `Welcome, ${document.getElementById('username').value || 'Rao Shb'}`;
+        this.setupBackupAutomation();
+        this.setupEnhancedDatabaseOperations();
     }
 
     showNotification(message, type = 'info') {
@@ -498,9 +922,9 @@ class AdminPanel {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             if (toast.parentNode) {
                 toast.remove();
@@ -526,25 +950,30 @@ class AdminPanel {
         this.handleTabChange(tabName);
     }
 
-   handleTabChange(tab) {
-    switch (tab) {
-        case 'dashboard':
-            this.loadDashboard();
-            break;
-        case 'familyManagement':
-            this.loadFamilyManagement();
-            break;
-        case 'databaseViewer':
-            this.loadDatabaseViewer();
-            break;
-        case 'databaseExport':
-            this.loadDatabaseExport();
-            break;
-        case 'siteContent':
-            this.loadSiteContent();
-            break;
+    handleTabChange(tab) {
+        switch (tab) {
+            case 'dashboard':
+                this.loadDashboard();
+                break;
+            case 'familyManagement':
+                this.loadFamilyManagement();
+                break;
+            case 'databaseViewer':
+                this.loadDatabaseViewer();
+                break;
+            case 'databaseExport':
+                this.loadDatabaseExport();
+                break;
+            case 'siteContent':
+                this.loadSiteContent();
+                break;
+        }
+
+        // Re-attach dynamic events when tab changes
+        setTimeout(() => {
+            this.attachDynamicFormEvents();
+        }, 100);
     }
-}
 
     // Dashboard
     async loadDashboard() {
@@ -576,7 +1005,7 @@ class AdminPanel {
             const recentMembers = familyData
                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                 .slice(0, 5);
-            
+
             recentActivity.innerHTML = recentMembers.map(member => `
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                     <div>
@@ -601,7 +1030,7 @@ class AdminPanel {
 
     renderFamilyTable(members) {
         const tbody = document.getElementById('familyTableBody');
-        
+
         if (members.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No family members found</td></tr>';
             return;
@@ -610,7 +1039,7 @@ class AdminPanel {
         tbody.innerHTML = members.map(member => {
             const parent = members.find(m => m.id === member.parent_id);
             const status = member.is_alive ? '<span class="badge bg-success">Living</span>' : '<span class="badge bg-secondary">Deceased</span>';
-            
+
             return `
                 <tr>
                     <td>${member.id}</td>
@@ -654,7 +1083,7 @@ class AdminPanel {
         try {
             const response = await this.apiCall('/family');
             const member = response.data.find(m => m.id === id);
-            
+
             if (member) {
                 this.openMemberModal(member);
             }
@@ -667,7 +1096,7 @@ class AdminPanel {
         const modal = new bootstrap.Modal(document.getElementById('memberModal'));
         const title = document.getElementById('modalTitle');
         const form = document.getElementById('memberForm');
-        
+
         if (member) {
             // Edit mode
             title.textContent = 'Edit Family Member';
@@ -680,7 +1109,7 @@ class AdminPanel {
             document.getElementById('photo').value = member.photo_url || '';
             document.getElementById('biography').value = member.biography || '';
             this.currentEditingId = member.id;
-            
+
             // Populate parent select
             this.populateParentSelect(member.parent_id);
         } else {
@@ -691,28 +1120,28 @@ class AdminPanel {
             this.currentEditingId = null;
             this.populateParentSelect();
         }
-        
+
         modal.show();
     }
 
     async populateParentSelect(selectedId = null) {
         const select = document.getElementById('parent');
-        
+
         try {
             const response = await this.apiCall('/family');
             const members = response.data;
-            
+
             select.innerHTML = '<option value="">Select Parent (Optional)</option>';
-            
+
             members.forEach(member => {
                 const option = document.createElement('option');
                 option.value = member.id;
                 option.textContent = `${member.first_name} ${member.last_name} (Generation ${member.generation})`;
-                
+
                 if (selectedId && member.id === selectedId) {
                     option.selected = true;
                 }
-                
+
                 select.appendChild(option);
             });
         } catch (error) {
@@ -768,7 +1197,7 @@ class AdminPanel {
             await this.apiCall(`/family/${id}`, {
                 method: 'DELETE'
             });
-            
+
             this.showNotification('Member deleted successfully!', 'success');
             this.loadFamilyManagement();
             this.loadDashboard();
@@ -789,7 +1218,7 @@ class AdminPanel {
 
     renderDatabaseTables(databaseInfo) {
         const container = document.getElementById('databaseTables');
-        
+
         container.innerHTML = `
             <div class="row">
                 ${databaseInfo.tables.map(table => `
@@ -844,7 +1273,7 @@ class AdminPanel {
 
         // Create table header
         const headers = schema.map(col => `<th>${col.name}</th>`).join('');
-        
+
         // Create table rows
         const rows = data.map(row => `
             <tr>
@@ -871,14 +1300,14 @@ class AdminPanel {
                         <li class="page-item ${pagination.page === 1 ? 'disabled' : ''}">
                             <a class="page-link pagination-link" href="#" data-table="${table}" data-page="${pagination.page - 1}">Previous</a>
                         </li>
-                        ${Array.from({length: Math.min(5, pagination.totalPages)}, (_, i) => {
-                            const pageNum = i + 1;
-                            return `
+                        ${Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+            const pageNum = i + 1;
+            return `
                                 <li class="page-item ${pageNum === pagination.page ? 'active' : ''}">
                                     <a class="page-link pagination-link" href="#" data-table="${table}" data-page="${pageNum}">${pageNum}</a>
                                 </li>
                             `;
-                        }).join('')}
+        }).join('')}
                         <li class="page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}">
                             <a class="page-link pagination-link" href="#" data-table="${table}" data-page="${pagination.page + 1}">Next</a>
                         </li>
@@ -911,33 +1340,33 @@ class AdminPanel {
         if (value === null || value === undefined) {
             return '<span class="text-muted">NULL</span>';
         }
-        
+
         if (typeof value === 'boolean') {
             return value ? '<span class="badge bg-success">true</span>' : '<span class="badge bg-secondary">false</span>';
         }
-        
+
         if (typeof value === 'number') {
             return value;
         }
-        
+
         if (typeof value === 'string') {
             if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
                 return new Date(value).toLocaleString();
             }
-            
+
             if (value.length > 100) {
                 return value.substring(0, 100) + '...';
             }
-            
+
             return value;
         }
-        
+
         return JSON.stringify(value);
     }
 
     // Database Export
     async loadDatabaseExport() {
-        // This tab doesn't need initial loading
+        await this.loadBackupFiles();
     }
 
     async exportAsJSON() {
@@ -945,7 +1374,7 @@ class AdminPanel {
             const response = await this.apiCall('/admin/database-export');
             const dataStr = JSON.stringify(response.data, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
+
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
@@ -954,7 +1383,7 @@ class AdminPanel {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
-            
+
             this.showNotification('Database exported successfully!', 'success');
         } catch (error) {
             console.error('Export failed:', error);
@@ -965,7 +1394,7 @@ class AdminPanel {
         try {
             const response = await this.apiCall('/admin/database-export');
             const container = document.getElementById('exportResult');
-            
+
             container.innerHTML = `
                 <h6>Raw Database Export</h6>
                 <div class="json-viewer">
