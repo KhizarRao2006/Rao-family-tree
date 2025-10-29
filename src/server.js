@@ -25,20 +25,37 @@ app.use(helmet({
   }
 }));
 
-app.use(cors());
+// app.use(cors());
+// CORS configuration
+app.use(cors({
+  origin: true, // Allow current origin
+  credentials: true, // Allow credentials (cookies)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'fallback-secret-key',
+  secret: process.env.SESSION_SECRET || 'fallback-secret-key-for-development-only',
   resave: false,
   saveUninitialized: false,
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'lax', // Changed from strict to lax for Railway
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
+  },
+  // Added this for production session store
+  store: process.env.NODE_ENV === 'production' ? 
+    new session.MemoryStore() : undefined, // For production, use MemoryStore
+  // Added proxy trust for Railway
+  proxy: true
 }));
+
+// Add this after session middleware
+app.set('trust proxy', 1); // Trust first proxy (Railway)
 
 // Logging
 app.use(morgan);
