@@ -181,7 +181,7 @@
                             <i class="fas fa-crown me-2"></i>Rao Family Admin
                         </h1>
                     </div>
-                    <button id="viewSiteBtn" class="btn btn-outline-light btn-sm ms-2" target="_blank">
+                    <button id="viewSiteBtn" class="btn btn-outline-light btn-sm ms-2">
                         <i class="fas fa-external-link-alt me-1"></i>View Site
                     </button>
                     <div class="col-auto">
@@ -205,7 +205,6 @@
                                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a>
                             </li>
-
                             <li class="nav-item">
                                 <a href="#familyManagement" class="nav-link" data-tab="familyManagement">
                                     <i class="fas fa-users me-2"></i>Family Management
@@ -366,12 +365,15 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Site content -->
+
+                        <!-- Site Content Tab -->
                         <div class="tab-pane fade" id="siteContent">
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
                                 <i class="fas fa-globe me-2"></i>Site Content Management
                             </h2>
-                            <div class="card mt-4">
+                            
+                            <!-- Header Layout Options -->
+                            <div class="card">
                                 <div class="card-header">
                                     <h5 class="mb-0">Header Layout Options</h5>
                                 </div>
@@ -387,7 +389,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card">
+
+                            <!-- Header Content -->
+                            <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Header Content</h5>
                                 </div>
@@ -395,18 +399,17 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="siteTitle" class="form-label">Site Title</label>
-                                            <input type="text" class="form-control" id="siteTitle"
-                                                placeholder="Rao Family Dynasty">
+                                            <input type="text" class="form-control" id="siteTitle" placeholder="Rao Family Dynasty">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="siteSubtitle" class="form-label">Subtitle</label>
-                                            <input type="text" class="form-control" id="siteSubtitle"
-                                                placeholder="Established 1895 • Honoring Our Heritage">
+                                            <input type="text" class="form-control" id="siteSubtitle" placeholder="Established 1895 • Honoring Our Heritage">
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Custom Content Sections -->
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Custom Content Sections</h5>
@@ -415,25 +418,13 @@
                                     <div id="customSectionsContainer">
                                         <!-- Custom sections will be added here -->
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2"
-                                        id="addCustomSection">
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addCustomSection">
                                         <i class="fas fa-plus me-1"></i>Add Custom Section
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="mt-4">
-                                <button type="button" id="setAsDefaultBtn" class="btn btn-warning">
-                                    <i class="fas fa-star me-2"></i>Set Current Content as Default
-                                </button>
-                                <button type="button" id="saveSiteContent" class="btn btn-admin ms-2">
-                                    <i class="fas fa-save me-2"></i>Save All Site Content
-                                </button>
-                                <button type="button" id="resetSiteContent" class="btn btn-outline-secondary ms-2">
-                                    <i class="fas fa-undo me-2"></i>Reset to Defaults
-                                </button>
-                            </div>
-
+                            <!-- Footer Content -->
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Footer Content</h5>
@@ -442,13 +433,11 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="footerCopyright" class="form-label">Copyright Text</label>
-                                            <input type="text" class="form-control" id="footerCopyright"
-                                                placeholder="© 2025 Rao Family. All Rights Reserved.">
+                                            <input type="text" class="form-control" id="footerCopyright" placeholder="© 2025 Rao Family. All Rights Reserved.">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="footerTagline" class="form-label">Tagline</label>
-                                            <input type="text" class="form-control" id="footerTagline"
-                                                placeholder="Preserving our legacy for future generations">
+                                            <input type="text" class="form-control" id="footerTagline" placeholder="Preserving our legacy for future generations">
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -456,14 +445,14 @@
                                         <div id="footerLinksContainer">
                                             <!-- Dynamic footer links will be added here -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2"
-                                            id="addFooterLink">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addFooterLink">
                                             <i class="fas fa-plus me-1"></i>Add Link
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Family History -->
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Family History</h5>
@@ -471,48 +460,43 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="historyTitle" class="form-label">History Title</label>
-                                        <input type="text" class="form-control" id="historyTitle"
-                                            placeholder="Family History">
+                                        <input type="text" class="form-control" id="historyTitle" placeholder="Family History">
                                     </div>
                                     <div class="mb-3">
                                         <label for="historyIntroduction" class="form-label">Introduction</label>
-                                        <textarea class="form-control" id="historyIntroduction" rows="3"
-                                            placeholder="The Rao family traces its lineage back to the late 19th century..."></textarea>
+                                        <textarea class="form-control" id="historyIntroduction" rows="3" placeholder="The Rao family traces its lineage back to the late 19th century..."></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Achievements</label>
                                         <div id="achievementsContainer">
                                             <!-- Dynamic achievements will be added here -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2"
-                                            id="addAchievement">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addAchievement">
                                             <i class="fas fa-plus me-1"></i>Add Achievement
                                         </button>
                                     </div>
                                     <div class="mb-3">
                                         <label for="historyValues" class="form-label">Family Values</label>
-                                        <textarea class="form-control" id="historyValues" rows="3"
-                                            placeholder="The Rao family is built on principles of integrity..."></textarea>
+                                        <textarea class="form-control" id="historyValues" rows="3" placeholder="The Rao family is built on principles of integrity..."></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="historyMotto" class="form-label">Family Motto</label>
-                                                <input type="text" class="form-control" id="historyMotto"
-                                                    placeholder="Honor the past, serve the present, build the future.">
+                                                <input type="text" class="form-control" id="historyMotto" placeholder="Honor the past, serve the present, build the future.">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="historyCrest" class="form-label">Crest Symbolism</label>
-                                                <textarea class="form-control" id="historyCrest" rows="3"
-                                                    placeholder="The crown represents leadership and nobility..."></textarea>
+                                                <textarea class="form-control" id="historyCrest" rows="3" placeholder="The crown represents leadership and nobility..."></textarea>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Family Timeline -->
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Family Timeline</h5>
@@ -520,22 +504,21 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="timelineTitle" class="form-label">Timeline Title</label>
-                                        <input type="text" class="form-control" id="timelineTitle"
-                                            placeholder="Family Timeline">
+                                        <input type="text" class="form-control" id="timelineTitle" placeholder="Family Timeline">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Timeline Events</label>
                                         <div id="timelineEventsContainer">
                                             <!-- Dynamic timeline events will be added here -->
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2"
-                                            id="addTimelineEvent">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addTimelineEvent">
                                             <i class="fas fa-plus me-1"></i>Add Event
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Statistics -->
                             <div class="card mt-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Statistics</h5>
@@ -548,8 +531,12 @@
                                 </div>
                             </div>
 
+                            <!-- Action Buttons - ALL IN ONE PLACE AT THE BOTTOM -->
                             <div class="mt-4">
-                                <button type="button" id="saveSiteContent" class="btn btn-admin">
+                                <button type="button" id="setAsDefaultBtn" class="btn btn-warning">
+                                    <i class="fas fa-star me-2"></i>Set Current Content as Default
+                                </button>
+                                <button type="button" id="saveSiteContent" class="btn btn-admin ms-2">
                                     <i class="fas fa-save me-2"></i>Save All Site Content
                                 </button>
                                 <button type="button" id="resetSiteContent" class="btn btn-outline-secondary ms-2">
@@ -557,6 +544,7 @@
                                 </button>
                             </div>
                         </div>
+
                         <!-- Database Export Tab -->
                         <div class="tab-pane fade" id="databaseExport">
                             <h2 class="mb-4" style="font-family: 'Cinzel', serif; color: var(--burgundy);">
@@ -593,8 +581,7 @@
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <label for="importFile" class="form-label">Select File to Import</label>
-                                                <input type="file" class="form-control" id="importFile"
-                                                    accept=".json,.csv">
+                                                <input type="file" class="form-control" id="importFile" accept=".json,.csv">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="importFormat" class="form-label">Import Format</label>
@@ -626,11 +613,11 @@
                             </div>
 
                             <div class="mt-4" id="exportResult"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- Family Member Modal -->

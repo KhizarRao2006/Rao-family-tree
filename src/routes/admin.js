@@ -428,19 +428,30 @@ router.get('/backup-files', async (req, res, next) => {
     
     try {
       const files = await fs.readdir(backupDir);
-      const backupFiles = files
-        .filter(file => file.startsWith('family-backup-'))
-        .map(file => {
-          const filePath = path.join(backupDir, file);
-          const stats = fs.statSync(filePath);
-          return {
-            name: file,
-            path: filePath,
-            size: stats.size,
-            created: stats.birthtime
-          };
-        })
-        .sort((a, b) => new Date(b.created) - new Date(a.created));
+      const backupFiles = [];
+      
+      // Use Promise.all to handle async file stats
+      await Promise.all(
+        files
+          .filter(file => file.startsWith('family-backup-'))
+          .map(async (file) => {
+            try {
+              const filePath = path.join(backupDir, file);
+              const stats = await fs.stat(filePath);
+              backupFiles.push({
+                name: file,
+                path: filePath,
+                size: stats.size,
+                created: stats.birthtime
+              });
+            } catch (error) {
+              console.error(`Error getting stats for file ${file}:`, error);
+            }
+          })
+      );
+      
+      // Sort by creation date (newest first)
+      backupFiles.sort((a, b) => new Date(b.created) - new Date(a.created));
       
       res.json({
         success: true,
@@ -459,7 +470,11 @@ router.get('/backup-files', async (req, res, next) => {
       }
     }
   } catch (error) {
-    next(error);
+    console.error('Error in backup-files route:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to load backup files: ' + error.message
+    });
   }
 });
 module.exports = router;

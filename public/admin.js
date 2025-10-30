@@ -290,40 +290,45 @@ class AdminPanel {
             this.renderBackupFiles(response.data);
         } catch (error) {
             console.error('Failed to load backup files:', error);
+            this.showNotification('Failed to load backup files', 'error');
         }
-    }
 
+    }
     renderBackupFiles(files) {
         const container = document.getElementById('backupFilesList');
+        if (!container) return;
 
-        if (files.length === 0) {
+        if (!files || files.length === 0) {
             container.innerHTML = '<p class="text-muted">No backup files found.</p>';
             return;
         }
 
         container.innerHTML = files.map(file => `
-    <div class="card mb-2">
-      <div class="card-body py-2">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="mb-1">${file.name}</h6>
-            <small class="text-muted">
-              ${new Date(file.created).toLocaleString()} • 
-              ${(file.size / 1024).toFixed(2)} KB
-            </small>
-          </div>
-          <div>
-            <button class="btn btn-sm btn-outline-primary download-backup-btn" data-file="${file.name}">
-              <i class="fas fa-download"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger delete-backup-btn ms-1" data-file="${file.name}">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
+        <div class="card mb-2">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">${file.name}</h6>
+                        <small class="text-muted">
+                            ${new Date(file.created).toLocaleString()} • 
+                            ${(file.size / 1024).toFixed(2)} KB
+                        </small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary download-backup-btn" data-file="${file.name}">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-backup-btn ms-1" data-file="${file.name}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  `).join('');
+    `).join('');
+
+        // Attach events to backup file buttons
+        this.attachBackupFileEvents();
     }
 
     async loadSiteContent() {
@@ -333,16 +338,20 @@ class AdminPanel {
             this.renderSiteContentForm();
         } catch (error) {
             console.error('Failed to load site content:', error);
+            // Use the default content structure
             this.siteContent = this.getDefaultSiteContent();
             this.renderSiteContentForm();
+            this.showNotification('Using default site content', 'info');
         }
     }
 
+    // Update getDefaultSiteContent to include customContent
     getDefaultSiteContent() {
         return {
             header: {
                 title: "RAO FAMILY DYNASTY",
-                subtitle: "Established 1895 • Honoring Our Heritage"
+                subtitle: "Established 1895 • Honoring Our Heritage",
+                layout: "default"
             },
             footer: {
                 copyright: "© 2025 Rao Family. All Rights Reserved.",
@@ -379,14 +388,20 @@ class AdminPanel {
             },
             stats: {
                 years_legacy: "127"
+            },
+            customContent: {
+                sections: []
             }
         };
     }
 
     renderSiteContentForm() {
+        if (!this.siteContent) return;
+
         // Header
         document.getElementById('siteTitle').value = this.siteContent.header?.title || '';
         document.getElementById('siteSubtitle').value = this.siteContent.header?.subtitle || '';
+        document.getElementById('headerLayout').value = this.siteContent.header?.layout || 'default';
 
         // Footer
         document.getElementById('footerCopyright').value = this.siteContent.footer?.copyright || '';
@@ -407,6 +422,9 @@ class AdminPanel {
 
         // Stats
         document.getElementById('yearsLegacy').value = this.siteContent.stats?.years_legacy || '';
+
+        // Custom Sections
+        this.renderCustomSections();
     }
 
     renderFooterLinks() {
@@ -556,45 +574,75 @@ class AdminPanel {
     }
 
     async saveSiteContent() {
-        // Gather data from form
-        const siteContent = {
-            header: {
-                title: document.getElementById('siteTitle').value,
-                subtitle: document.getElementById('siteSubtitle').value
-            },
-            footer: {
-                copyright: document.getElementById('footerCopyright').value,
-                tagline: document.getElementById('footerTagline').value,
-                links: this.gatherFooterLinks()
-            },
-            history: {
-                title: document.getElementById('historyTitle').value,
-                introduction: document.getElementById('historyIntroduction').value,
-                achievements: this.gatherAchievements(),
-                values: document.getElementById('historyValues').value,
-                motto: document.getElementById('historyMotto').value,
-                crestSymbolism: document.getElementById('historyCrest').value
-            },
-            timeline: {
-                title: document.getElementById('timelineTitle').value,
-                events: this.gatherTimelineEvents()
-            },
-            stats: {
-                years_legacy: document.getElementById('yearsLegacy').value
-            }
-        };
-
         try {
+            // Gather data from form
+            const siteContent = {
+                header: {
+                    title: document.getElementById('siteTitle').value,
+                    subtitle: document.getElementById('siteSubtitle').value,
+                    layout: document.getElementById('headerLayout').value || 'default'
+                },
+                footer: {
+                    copyright: document.getElementById('footerCopyright').value,
+                    tagline: document.getElementById('footerTagline').value,
+                    links: this.gatherFooterLinks()
+                },
+                history: {
+                    title: document.getElementById('historyTitle').value,
+                    introduction: document.getElementById('historyIntroduction').value,
+                    achievements: this.gatherAchievements(),
+                    values: document.getElementById('historyValues').value,
+                    motto: document.getElementById('historyMotto').value,
+                    crestSymbolism: document.getElementById('historyCrest').value
+                },
+                timeline: {
+                    title: document.getElementById('timelineTitle').value,
+                    events: this.gatherTimelineEvents()
+                },
+                stats: {
+                    years_legacy: document.getElementById('yearsLegacy').value
+                },
+                customContent: {
+                    sections: this.gatherCustomSections()
+                }
+            };
+
+            console.log('Saving site content:', siteContent); // Debug log
+
             const response = await this.apiCall('/site-content', {
                 method: 'POST',
                 body: JSON.stringify(siteContent)
             });
 
-            this.siteContent = siteContent;
-            this.showNotification('Site content saved successfully!', 'success');
+            if (response.success) {
+                this.siteContent = siteContent;
+                this.showNotification('Site content saved successfully!', 'success');
+            } else {
+                throw new Error(response.error || 'Failed to save site content');
+            }
         } catch (error) {
             console.error('Failed to save site content:', error);
+            this.showNotification('Failed to save site content: ' + error.message, 'error');
         }
+    }
+
+    // Add method to gather custom sections
+    gatherCustomSections() {
+        const sections = [];
+        document.querySelectorAll('.custom-section-item').forEach(item => {
+            const sectionId = item.querySelector('.section-id').value.trim();
+            const sectionType = item.querySelector('.section-type').value;
+            const sectionContent = item.querySelector('.section-content').value.trim();
+
+            if (sectionId && sectionContent) {
+                sections.push({
+                    section: sectionId,
+                    type: sectionType,
+                    content: sectionContent
+                });
+            }
+        });
+        return sections;
     }
 
     gatherFooterLinks() {
@@ -782,13 +830,18 @@ class AdminPanel {
     }
 
     // New method to attach dynamic form events
+    // New method to attach dynamic form events
     attachDynamicFormEvents() {
+        console.log('Attaching dynamic form events...'); // Debug log
+
         // Footer links
         const addFooterLinkBtn = document.getElementById('addFooterLink');
         if (addFooterLinkBtn) {
             addFooterLinkBtn.addEventListener('click', () => {
                 this.addFooterLink();
             });
+        } else {
+            console.warn('addFooterLink button not found');
         }
 
         // Achievements
@@ -797,6 +850,8 @@ class AdminPanel {
             addAchievementBtn.addEventListener('click', () => {
                 this.addAchievement();
             });
+        } else {
+            console.warn('addAchievement button not found');
         }
 
         // Timeline events
@@ -805,6 +860,8 @@ class AdminPanel {
             addTimelineEventBtn.addEventListener('click', () => {
                 this.addTimelineEvent();
             });
+        } else {
+            console.warn('addTimelineEvent button not found');
         }
 
         // Custom sections
@@ -813,6 +870,42 @@ class AdminPanel {
             addCustomSectionBtn.addEventListener('click', () => {
                 this.addCustomSection();
             });
+        } else {
+            console.warn('addCustomSection button not found');
+        }
+
+        // Site content action buttons
+        const saveSiteContentBtn = document.getElementById('saveSiteContent');
+        if (saveSiteContentBtn) {
+            // Remove any existing listeners and add new one
+            saveSiteContentBtn.replaceWith(saveSiteContentBtn.cloneNode(true));
+            document.getElementById('saveSiteContent').addEventListener('click', () => {
+                this.saveSiteContent();
+            });
+        } else {
+            console.warn('saveSiteContent button not found');
+        }
+
+        const setAsDefaultBtn = document.getElementById('setAsDefaultBtn');
+        if (setAsDefaultBtn) {
+            setAsDefaultBtn.addEventListener('click', () => {
+                this.setCurrentAsDefault();
+            });
+        } else {
+            console.warn('setAsDefaultBtn button not found');
+        }
+
+        const resetSiteContentBtn = document.getElementById('resetSiteContent');
+        if (resetSiteContentBtn) {
+            resetSiteContentBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset all site content to defaults? This cannot be undone.')) {
+                    this.siteContent = this.getDefaultSiteContent();
+                    this.renderSiteContentForm();
+                    this.showNotification('Site content reset to defaults.', 'info');
+                }
+            });
+        } else {
+            console.warn('resetSiteContent button not found');
         }
     }
 
@@ -951,6 +1044,8 @@ class AdminPanel {
     }
 
     handleTabChange(tab) {
+        console.log('Changing to tab:', tab); // Debug log
+
         switch (tab) {
             case 'dashboard':
                 this.loadDashboard();
@@ -969,10 +1064,16 @@ class AdminPanel {
                 break;
         }
 
-        // Re-attach dynamic events when tab changes
+        // Re-attach dynamic events when tab changes with a small delay
         setTimeout(() => {
+            console.log('Re-attaching events for tab:', tab); // Debug log
             this.attachDynamicFormEvents();
-        }, 100);
+
+            // Also attach backup file events if we're in database export tab
+            if (tab === 'databaseExport') {
+                this.attachBackupFileEvents();
+            }
+        }, 300);
     }
 
     // Dashboard

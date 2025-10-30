@@ -13,7 +13,7 @@ const defaultSiteContent = {
   header: {
     title: "RAO FAMILY DYNASTY",
     subtitle: "Established 1895 • Honoring Our Heritage",
-    layout: "default" // Added layout option
+    layout: "default"
   },
   footer: {
     copyright: "© 2025 Rao Family. All Rights Reserved.",
@@ -52,7 +52,6 @@ const defaultSiteContent = {
     years_legacy: "127"
   },
   customContent: {
-    // For storing custom paragraphs/lines
     sections: []
   }
 };
